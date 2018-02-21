@@ -52,6 +52,16 @@ class Game extends React.Component {
     };
   }
 
+  reset(){
+    this.setState({
+      history: [{
+        squares: Array(9).fill(null),
+      }],
+      stepNumber: 0,
+      xIsNext: true,
+    });
+  }
+
   jumpTo(step) {
     this.setState({
       stepNumber: step,
@@ -108,6 +118,8 @@ class Game extends React.Component {
         </div>
         <div className="game-info">
           <div>{status}</div>
+          {(winner || draw) &&
+          <div><button onClick={()=>this.reset()}>Play again</button></div>}
           <ol>{moves}</ol>
         </div>
       </div>
