@@ -3,18 +3,40 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function Square(props) {
-  return (
-    <button className="square" onClick={() => props.onClick()} >
+  if (props.winner) {
+    return (
+      <button className="square" onClick={() => props.onClick()} >
+        <em>
+          {props.value}
+        </em>
+      </button>
+    );
+  } else {
+    return (
+      <button className="square" onClick={() => props.onClick()} >
         {props.value}
-    </button>
-  );
+      </button>
+    );
+  }
 }
 
 class Board extends React.Component {
   renderSquare(i) {
+    let winner;
+    if (this.props.winners) {
+      winner = false;
+      for (var ii = 0 ; ii < this.props.winners.length ; ii++) {
+        if (i === this.props.winners[ii]) {
+          winner = true;
+        }
+      }
+    } else {
+      winner = false;
+    }
     return <Square
       value={this.props.squares[i]} 
-      onClick={() => this.props.onClick(i)} />;
+      onClick={() => this.props.onClick(i)}
+      winner={winner} />;
   }
 
   render() {
@@ -98,6 +120,12 @@ class Game extends React.Component {
     } else {
       status = 'Next player: ' + (this.state.xIsNext ?  'X' : 'O');
     }
+    let winningSquares;
+    if (winner) {
+      winningSquares = findWinners(current.squares);
+    } else {
+      winningSquares = null;
+    }
 
     const moves = history.map((step, move) => {
       const desc = move ? 
@@ -114,7 +142,8 @@ class Game extends React.Component {
         <div className="game-board">
           <Board
             squares={current.squares}
-            onClick={(i) => this.handleClick(i)} />
+            onClick={(i) => this.handleClick(i)}
+            winners={winningSquares} />
         </div>
         <div className="game-info">
           <div>{status}</div>
@@ -127,7 +156,7 @@ class Game extends React.Component {
   }
 }
 
-function calculateWinner(squares) {
+function findWinners(squares) {
   const lines = [
     [0, 1, 2],
     [3, 4, 5],
@@ -141,8 +170,16 @@ function calculateWinner(squares) {
   for (let i = 0; i < lines.length; i++) {
     const [a, b, c] = lines[i];
     if (squares[a] && squares[a] === squares[b] && squares[a] === squares[c]) {
-      return squares[a];
+      return [a, b, c];
     }
+  }
+  return null;
+}
+
+function calculateWinner(squares) {
+  const sqrs = findWinners(squares);
+  if (sqrs){
+    return squares[sqrs[0]];
   }
   return null;
 }
