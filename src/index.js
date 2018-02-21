@@ -3,21 +3,13 @@ import ReactDOM from 'react-dom';
 import './index.css';
 
 function Square(props) {
-  if (props.winner) {
-    return (
-      <button className="square" onClick={() => props.onClick()} >
-        <em>
-          {props.value}
-        </em>
-      </button>
-    );
-  } else {
-    return (
-      <button className="square" onClick={() => props.onClick()} >
+  return (
+    <button 
+      className={props.winner ? "winningsquare" : "square"}
+      onClick={() => props.onClick()} >
         {props.value}
-      </button>
-    );
-  }
+    </button>
+  );
 }
 
 class Board extends React.Component {
